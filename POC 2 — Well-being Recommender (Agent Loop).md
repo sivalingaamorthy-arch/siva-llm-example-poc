@@ -1,43 +1,44 @@
-# POC 2 — Well-being Recommender using an Agent Loop
+# POC 2 — Well-being Recommender: Agent Framework Comparison
 
-Self-contained learning POC. It shares nothing with POC 1: own folder, own database, own data, own copy of the retrieval code. Both POCs can be built in parallel by two separate Claude Code sessions.
+Self-contained Codespaces learning POC. It shares no runtime code or database with POC 1: it has its own app folder, PostgreSQL database, synthetic data copy, and retrieval implementation. Its data and models match POC 1 so the framework runs can be compared.
 
-**Instruction to Claude Code:** build in the phases below, one at a time. After each phase, run its checkpoint, show me the output, and stop for my go-ahead before the next phase.
+This POC implements the same bounded retrieve → validate → retry → fallback behavior three ways: **LangChain tool-calling agent**, **LangGraph state graph**, and **Agno tool-calling agent**. A Streamlit UI lets you run the same synthetic report through each implementation.
 
-**Design note:** the retrieval code is deliberately duplicated from POC 1, not shared as a library. Duplication over coupling: each POC evolves independently.
+**Design note:** retrieval code and data are deliberately duplicated from POC 1. This keeps the examples independently runnable and avoids cross-POC coupling.
 
 ## 1. Goal
 
 Same feature as POC 1, built as an agent loop. A **retriever agent** proposes the top 3 physical and top 3 mental articles. A **validator agent** checks them. On failure the validator sends feedback and the retriever tries again, up to **3 retries**. If it still fails, a **fallback** shows safe default content, raises a content-gap alert, and flags the case for reassessment.
 
-**What I want to learn:** LangGraph state, nodes and conditional edges; tool calling; maker-checker validation; bounded retries; safe fallback; tracing every iteration.
+**What I want to learn:** compare LangChain and Agno tool-using agents with explicit LangGraph nodes and conditional edges; deterministic maker-checker validation; bounded retries; safe fallback; and traces for every iteration.
 
 ## 2. Stack
 
-- Python 3.11
-- PostgreSQL 16 + pgvector, installed locally, no Docker, **port 5432**, database `wellbeing_agent` (a separate database from POC 1's on the same local instance, so both run side by side)
-- Ollama on the host: `llama3.1:8b` (supports tool calling) and `nomic-embed-text` (768 dimensions)
-- Libraries: `langgraph`, `langchain-ollama`, `psycopg[binary]`, `pgvector`, `pydantic`, `pytest`
+- Python 3.12 or newer in a POC-local virtual environment
+- PostgreSQL 16 + pgvector in Docker Compose, **host port 5433**, database `wellbeing_agent`
+- OpenAI API for generation and embeddings: `gpt-4o-mini` and `text-embedding-3-small` (1536 dimensions)
+- Libraries: `langchain`, `langchain-openai`, `langgraph`, `agno`, `openai`, `psycopg[binary]`, `pgvector`, `pydantic`, `streamlit`, `pytest`
 
-### 2.1 Local environment (no Docker, no admin rights)
+### 2.1 Codespaces environment
 
-- **PostgreSQL 16 installed locally** on the default port 5432. The same instance as POC 1 is fine; this POC uses its own database, `wellbeing_agent`.
-- **pgvector** must be installed for that PostgreSQL. Check with `CREATE EXTENSION IF NOT EXISTS vector;` in `setup_db.sql`.
-- **Python virtual environment** inside the POC folder: `python -m venv .venv`, then `pip install -r requirements.txt`. Nothing installed globally, so POC 1 and POC 2 dependencies never clash.
-- **Ollama** running locally on port 11434, with `ollama pull llama3.1:8b` and `ollama pull nomic-embed-text` done. Both POCs share it.
-- Connection details live in `.env` (`DATABASE_URL`, `OLLAMA_HOST`), never hard-coded.
-- **Rule for Claude Code:** do not install system software or anything needing admin rights. In Phase 1, run a preflight check (Postgres reachable, pgvector available, Ollama reachable, both models pulled) and stop with a clear message if anything is missing.
-- **Temporary fallback, only if pgvector cannot be installed:** use **Chroma** (pip-only, runs in-process, persists to `./chroma_db`) behind the same `retrieval_tool` interface, with metadata filters via its `where` clause. Note the swap in the README; switch back to pgvector once available.
-- **Running both POCs at once on one laptop:** Ollama serves requests one at a time by default, so parallel runs will be slower. Build both in parallel, but time the runs one after the other for the latency comparison.
+- **Use Docker Compose for PostgreSQL only.** The POC uses the `pgvector/pgvector:pg16` image. POC1 uses host port 5432; POC2 uses 5433 so both databases can run together.
+- **Use Python 3.12 or newer** from the Codespace and install project dependencies into this folder's `.venv`. No system packages or admin rights are needed.
+- **Set `OPENAI_API_KEY` as a Codespaces secret.** Never commit it or log its value. Generation and embeddings use the OpenAI API over HTTPS; configure access and billing for both models.
+- **Model defaults:** `GENERATION_MODEL=gpt-4o-mini`, `EMBEDDING_MODEL=text-embedding-3-small`, `EMBEDDING_DIMENSIONS=1536`. Keep model settings consistent across frameworks for a fair comparison.
+- **Costs/data:** each framework may make OpenAI embedding, judge, and summary calls. Calls are usage-billed and can be rate-limited. Synthetic report notes and retrieved article text are sent to OpenAI. Never use real health or personal data.
+- **No Chroma or Ollama fallback.** pgvector and OpenAI are common learning dependencies; if unavailable, preflight should explain how to fix the setup.
+- **UI port:** Streamlit uses port 8502 (private Codespaces forwarding), allowing POC1's UI on 8501 to remain available.
 
 ## 3. Folder structure
 
 ```
 poc2-wellbeing-agent/
   README.md
+  compose.yaml
   setup_db.sql
   requirements.txt
   .env.example
+  .gitignore
   data/
     articles.json
   reports/
@@ -45,21 +46,26 @@ poc2-wellbeing-agent/
     report2_safety_trap.json
     report3_content_gap.json
   src/
-    config.py              # MAX_RETRIES = 3, model names, DB url
-    models.py              # pydantic: Article, HealthReport, Verdict, Recommendation
-    vendor_loader.py
+    config.py              # Model/database config, MAX_RETRIES = 3
+    models.py              # Pydantic report, article, verdict, trace, output types
+    loader.py              # Seed catalog and load reports
     db.py
     ingest.py
-    report_parser.py
-    tools/
-      retrieval_tool.py    # hybrid retrieval, exposed as a tool
-      rules_tool.py        # deterministic safety checks
+    report_parser.py       # Markers and unmatched topics
+    retrieval.py           # Own pgvector retrieval implementation
+    rules.py               # Deterministic safety validation
+    openai_service.py
     agents/
-      retriever_agent.py
-      validator_agent.py
-    graph.py               # LangGraph state machine
-    fallback.py
-    agent_app.py           # CLI entry point
+      shared.py            # Bounded retries, traces, fallback events
+      langchain_agent.py   # Tool-using LangChain judge agent
+      langchain_runner.py
+      langgraph_agent.py   # Explicit StateGraph workflow
+      agno_agent.py        # Tool-using Agno judge agent
+      agno_runner.py
+    runner.py
+    preflight.py
+    agent_app.py
+    streamlit_app.py
   prompts/
     retriever_v1.txt
     validator_judge_v1.txt
@@ -68,14 +74,14 @@ poc2-wellbeing-agent/
     test_rules_tool.py
     test_graph_paths.py
   output/
-    runs/                  # one JSON trace per run
+    runs/                  # JSON result + trace, separated per framework
     content_gap_alerts.jsonl
     reassessment_queue.jsonl
 ```
 
 ## 4. Data
 
-Use exactly the same data spec as POC 1, so results are comparable.
+Use the exact same synthetic data as POC 1, including the fictional `Everwell` source, so results are comparable. The POC2 copy is independent.
 
 ### 4.1 Article schema
 
@@ -122,76 +128,79 @@ id, title, body (150–300 words), category (`physical` | `mental` | `wellbeing`
 
 ## 5. The agents
 
-### 5.1 Retriever agent
+### 5.1 Shared retriever component
 
-- Tool: `retrieval_tool(query, category, exclude_ids, filters)`.
+- Tool: `retrieve_candidates(report, markers, category, exclude_ids, feedback)`.
 - **Important:** in this POC the retrieval tool does *not* apply the contraindication filter. It only filters `approved` and `is_default`. This lets the safety trap reach the validator, so you can see the validator catch it.
-- On a retry, it receives the validator's feedback, reformulates the query, and excludes previously rejected article ids.
+- On a retry, it receives validator feedback, uses it in the retrieval query, and excludes previously rejected article IDs.
+- Retrieval is deterministic code; it embeds the query, filters metadata in PostgreSQL, and ranks with pgvector. It does not ask the LLM to invent or select article IDs.
 
 ### 5.2 Validator agent — two layers
 
-1. **Rules tool (deterministic, runs first):** approved = true; no contraindication overlap with user markers; intensity is `low` if `hypertension` is present; category correct; exactly 3 per category.
-2. **LLM judge (only if rules pass):** is each article relevant to the report's markers and unmatched topics? Is the tone safe, with no diagnosis or medical advice? Returns JSON: `{"verdict": "pass" | "fail", "rejected_ids": [...], "feedback": "...", "uncovered_topics": [...]}`.
+1. **Rules validator (deterministic, runs first):** approved = true; no contraindication overlap with report markers; no high-intensity physical item if hypertension is present; category correct; exactly 3 candidates per category; unmatched topics must be covered.
+2. **LLM judge (only if rules pass):** checks relevance to markers/topics. LangChain and Agno implement the judge as a tool-using agent; LangGraph calls a structured OpenAI judge node inside its graph. They return `{"verdict": "pass" | "fail", "rejected_ids": [...], "feedback": "...", "uncovered_topics": [...]}`.
 
-Principle to note in the README: rules for what must never happen, the model for judgement.
+**Principle:** deterministic rules guard what must never happen; the LLM provides a second opinion on semantic relevance. An LLM cannot override a deterministic rejection.
 
 ### 5.3 Fallback
 
-Triggered when retry\_count reaches 3 and the verdict is still fail:
+Triggered after the initial attempt plus three retries when the verdict is still fail:
 
-- Return the 3 default articles, with a line suggesting the user speak to a health adviser.
+- Return approved generic physical and mental defaults, with a line suggesting the user speak to a health adviser. There is one default per category, so fallback shows one physical and one mental item rather than pretending there are three suitable options.
 - Append to `content_gap_alerts.jsonl`: report\_id, uncovered\_topics, last feedback, timestamp.
 - Append to `reassessment_queue.jsonl`: report\_id, reason, timestamp.
 
-## 6. LangGraph design
+## 6. Framework implementations
 
-**State:** report, markers, unmatched\_topics, candidates, rejected\_ids, verdict, feedback, retry\_count, final\_output, trace.
+### LangChain
 
-**Nodes:** `parse_report` → `retrieve` → `validate` → `generate_output` | `fallback`.
+Uses a LangChain `create_agent` validator with an article-reading tool and structured Pydantic verdict. The bounded retry loop and deterministic rule gate live in the shared runner.
 
-**Conditional edge after `validate`:**
+### LangGraph
 
-- pass → `generate_output`
-- fail and retry\_count < 3 → increment retry\_count → `retrieve`
-- fail and retry\_count = 3 → `fallback`
+Uses an explicit `StateGraph` with parse, retrieval, deterministic validation, LLM judge, retry, fallback, generation, and finish nodes. Conditional edges make the workflow visible and inspectable.
 
-Every node appends to `trace`: node name, query used, article ids, verdict, reason, and elapsed time. Save the trace to `output/runs/<report_id>.json`. Also print a Mermaid diagram of the graph into the README.
+### Agno
+
+Uses an Agno `Agent` with an article-reading tool and Pydantic output schema. As with LangChain, the shared bounded runner enforces the same retry count and rule gate.
+
+Every run records attempt, node, article IDs, verdict/reason, and elapsed time in `output/runs/<report_id>_<framework>.json`. Framework-specific orchestration and judge traces are shown in the UI.
 
 ## 7. Build phases
 
-**Phase 1 — Setup and data.** Local setup (venv, run setup\_db.sql, check pgvector and Ollama), schema, loader, seed data, reports. *Checkpoint:* 33 rows.
+**Phase 1 — Setup and data.** Codespaces venv, Docker Compose PostgreSQL/pgvector, OpenAI secret/preflight, schema, seed data, and reports. *Checkpoint:* 33 rows.
 
-**Phase 2 — Ingest + retrieval tool.** Embed and load; implement `retrieval_tool`. *Checkpoint:* call the tool directly for each report and print results.
+**Phase 2 — Ingest + retrieval tool.** Embed and load articles; implement shared pgvector retrieval. *Checkpoint:* call retrieval for each report and inspect the ranked candidates.
 
 **Phase 3 — Rules tool.** Implement deterministic checks with unit tests. *Checkpoint:* the hypertension-contraindicated articles are rejected for R2.
 
-**Phase 4 — Graph without the LLM judge.** Wire the LangGraph loop using rules only. *Checkpoint:* R2 shows at least one reject → retry → pass in the trace.
+**Phase 4 — LangGraph.** Wire the explicit state graph, retries, and fallback. *Checkpoint:* graph trace shows R2 reject → retry → pass.
 
-**Phase 5 — Add the LLM judge.** *Checkpoint:* R3 fails on relevance three times, then hits fallback.
+**Phase 5 — LangChain and Agno.** Implement their structured, tool-using validator agents over the shared rules and retry runner. *Checkpoint:* R1 and R2 pass validation; R3 reaches fallback after three retries.
 
-**Phase 6 — Fallback, CLI and tests.** `python -m src.agent_app --report reports/report3_content_gap.json`.
+**Phase 6 — Streamlit, CLI, and tests.** Compare reports and frameworks in Streamlit; run a framework from CLI, e.g. `python -m src.agent_app --report reports/report3_content_gap.json --framework langgraph`.
 
 ## 8. Acceptance criteria (pytest)
 
-- R1 passes, within 1–2 iterations.
+- All framework runs keep retry\_count at or below 3.
 - R2: the trace shows the validator rejecting a contraindicated article with a reason, and the retriever recovering. The final output contains no high-intensity or contraindicated article.
-- R3: exactly 3 retries, then fallback. Default articles returned, one line in `content_gap_alerts.jsonl` naming `postpartum`, one line in `reassessment_queue.jsonl`.
-- retry\_count never exceeds 3 in any run.
+- R3: exactly 3 retries after the initial attempt, then fallback. Approved defaults returned; one line in each alert/queue JSONL file includes `postpartum`.
 - No run ever returns an unapproved article.
-- Empty database → immediate fallback, logged.
-- Ollama stopped → rules-only validation if candidates exist, otherwise fallback; logged, no crash.
+- Empty or unseeded database → clear setup error.
+- Missing/unavailable OpenAI API or model → clear error, no silent fallback to another provider.
+- All three frameworks run from the same Streamlit UI and produce separate comparable JSON traces.
 
 ## 9. Out of scope
 
-UI, auth, cloud deployment, more than two agents, human-in-the-loop approval.
+Authentication/authorization, cloud deployment, arbitrary report uploads, human-in-the-loop approval, external tracing services, and real health data.
 
 ## 10. README must include
 
-How to run, the graph diagram, the trace for each report, and a comparison table against POC 1: number of LLM calls, latency, and how each handled R3. End with a one-line conclusion: when the fixed RAG path is enough, and when the agent loop earns its extra cost.
+How to run, a plain-language technical explanation, Mermaid workflow, framework differences, Streamlit instructions, expected report outcomes, test results, costs/data handling, and how to inspect traces. Compare fixed RAG with this agent loop, including the additional judge calls/retries and R3 behavior. End with when fixed RAG is enough and when the agent loop earns its extra cost.
 
 ## 11. Optional extensions (only after Phase 6 works, one at a time)
 
 1. **Tracing** with LangSmith or OpenTelemetry instead of the JSON trace.
 2. **Evaluation set:** expected outcome per report (pass, retries, fallback), run as a regression check whenever a prompt changes.
-3. Make the LLM switchable between Ollama and **Azure OpenAI**.
+3. Make OpenAI switchable to **Azure OpenAI** through configuration.
 4. **Human-in-the-loop:** pause on fallback for a content author to approve or add content, using a LangGraph interrupt.
