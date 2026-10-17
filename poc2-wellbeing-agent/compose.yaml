@@ -1,0 +1,20 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-poc2}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-poc2_dev_only}
+      POSTGRES_DB: ${POSTGRES_DB:-wellbeing_agent}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - poc2_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-poc2} -d ${POSTGRES_DB:-wellbeing_agent}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  poc2_postgres_data:
