@@ -1,0 +1,17 @@
+{
+  "name": "articles-indexer",
+  "dataSourceName": "articles-blob",
+  "targetIndexName": "wellbeing-articles",
+  "skillsetName": "articles-embed",
+  "parameters": {
+    "configuration": {
+      "parsingMode": "jsonArray"
+    }
+  },
+  "outputFieldMappings": [
+    {
+      "sourceFieldName": "/document/content_vector",
+      "targetFieldName": "content_vector"
+    }
+  ]
+}

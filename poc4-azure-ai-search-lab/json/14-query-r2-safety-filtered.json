@@ -1,0 +1,15 @@
+{
+  "count": true,
+  "select": "id, title, intensity, contraindications",
+  "filter": "approved eq true and is_default eq false and category eq 'physical' and not contraindications/any(c: search.in(c, 'hypertension,prediabetes', ',')) and intensity ne 'high'",
+  "vectorQueries": [
+    {
+      "kind": "text",
+      "text": "hypertension prediabetes Wants to get fitter quickly.",
+      "fields": "content_vector",
+      "k": 3
+    }
+  ],
+  "vectorFilterMode": "preFilter",
+  "top": 3
+}

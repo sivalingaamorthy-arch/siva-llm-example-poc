@@ -1,0 +1,16 @@
+{
+  "count": true,
+  "search": "postpartum fatigue",
+  "select": "id, title, condition_tags",
+  "filter": "approved eq true and is_default eq false and category eq 'mental' and not contraindications/any(c: search.in(c, 'poor_sleep', ','))",
+  "vectorQueries": [
+    {
+      "kind": "text",
+      "text": "poor_sleep 12 weeks postpartum, low mood and fatigue.",
+      "fields": "content_vector",
+      "k": 3
+    }
+  ],
+  "vectorFilterMode": "preFilter",
+  "top": 3
+}
