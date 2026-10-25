@@ -1,0 +1,13 @@
+{
+  "count": true,
+  "select": "id, title, intensity, contraindications, approved",
+  "vectorQueries": [
+    {
+      "kind": "text",
+      "text": "hypertension prediabetes Wants to get fitter quickly.",
+      "fields": "content_vector",
+      "k": 5
+    }
+  ],
+  "top": 5
+}

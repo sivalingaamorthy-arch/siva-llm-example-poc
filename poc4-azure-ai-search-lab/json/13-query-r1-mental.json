@@ -1,0 +1,15 @@
+{
+  "count": true,
+  "select": "id, title, condition_tags",
+  "filter": "approved eq true and is_default eq false and category eq 'mental' and not contraindications/any(c: search.in(c, 'high_bmi,poor_sleep,sedentary,stress', ','))",
+  "vectorQueries": [
+    {
+      "kind": "text",
+      "text": "high_bmi poor_sleep sedentary stress Desk job, long hours.",
+      "fields": "content_vector",
+      "k": 3
+    }
+  ],
+  "vectorFilterMode": "preFilter",
+  "top": 3
+}

@@ -1,0 +1,173 @@
+{
+  "name": "wellbeing-articles",
+  "fields": [
+    {
+      "name": "id",
+      "type": "Edm.String",
+      "key": true,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "title",
+      "type": "Edm.String",
+      "key": false,
+      "retrievable": true,
+      "searchable": true,
+      "filterable": false,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "body",
+      "type": "Edm.String",
+      "key": false,
+      "retrievable": true,
+      "searchable": true,
+      "filterable": false,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "category",
+      "type": "Edm.String",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": true
+    },
+    {
+      "name": "condition_tags",
+      "type": "Collection(Edm.String)",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": true
+    },
+    {
+      "name": "intensity",
+      "type": "Edm.String",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": true
+    },
+    {
+      "name": "contraindications",
+      "type": "Collection(Edm.String)",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "source",
+      "type": "Edm.String",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": true
+    },
+    {
+      "name": "approved",
+      "type": "Edm.Boolean",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "is_default",
+      "type": "Edm.Boolean",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": false,
+      "facetable": false
+    },
+    {
+      "name": "published_date",
+      "type": "Edm.DateTimeOffset",
+      "key": false,
+      "retrievable": true,
+      "searchable": false,
+      "filterable": true,
+      "sortable": true,
+      "facetable": false
+    },
+    {
+      "name": "content_vector",
+      "type": "Collection(Edm.Single)",
+      "retrievable": false,
+      "searchable": true,
+      "dimensions": 1536,
+      "vectorSearchProfile": "hnsw-aoai-profile"
+    }
+  ],
+  "semantic": {
+    "configurations": [
+      {
+        "name": "default",
+        "prioritizedFields": {
+          "titleField": {
+            "fieldName": "title"
+          },
+          "prioritizedContentFields": [
+            {
+              "fieldName": "body"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "vectorSearch": {
+    "profiles": [
+      {
+        "name": "hnsw-aoai-profile",
+        "algorithm": "hnsw-cosine",
+        "vectorizer": "aoai-vectorizer"
+      }
+    ],
+    "algorithms": [
+      {
+        "name": "hnsw-cosine",
+        "kind": "hnsw",
+        "hnswParameters": {
+          "m": 4,
+          "efConstruction": 400,
+          "efSearch": 500,
+          "metric": "cosine"
+        }
+      }
+    ],
+    "vectorizers": [
+      {
+        "name": "aoai-vectorizer",
+        "kind": "azureOpenAI",
+        "azureOpenAIParameters": {
+          "resourceUri": "https://<your-foundry-resource>.openai.azure.com",
+          "deploymentId": "text-embedding-3-small",
+          "modelName": "text-embedding-3-small",
+          "apiKey": "<your-azure-openai-key>"
+        }
+      }
+    ]
+  }
+}

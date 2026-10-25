@@ -1,0 +1,28 @@
+{
+  "name": "articles-embed",
+  "description": "Embed title + body with Azure OpenAI",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+      "name": "embed-article",
+      "context": "/document",
+      "resourceUri": "https://<your-foundry-resource>.openai.azure.com",
+      "apiKey": "<your-azure-openai-key>",
+      "deploymentId": "text-embedding-3-small",
+      "modelName": "text-embedding-3-small",
+      "dimensions": 1536,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/embed_text"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "embedding",
+          "targetName": "content_vector"
+        }
+      ]
+    }
+  ]
+}

@@ -14,13 +14,15 @@ software only, not medical or clinical systems.
 ## The learning path
 
 The POCs explore patterns in sequence. POC 1 is a baseline, POC 2 adds an
-iterative orchestration pattern, and POC 3 is the next planned experiment.
+iterative orchestration pattern, POC 3 is the next planned experiment, and
+POC 4 moves the POC 1 retrieval onto a managed search service.
 
 | Example | Approach | What it demonstrates |
 |---|---|---|
 | [POC 1 — Health Content RAG](poc1-health-content-rag/README.md) | Fixed retrieval-augmented generation (RAG) pipeline | Shows how retrieval can ground a response, and how nearest-neighbor search can still return irrelevant content when the library has a gap. |
 | [POC 2 — Health Content Agent Loop](poc2-health-content-agent/README.md) | Bounded retrieve, validate, retry, and fallback loop | Compares LangChain, LangGraph, and Agno orchestration, and shows the added complexity, latency, and model calls of an agent loop. |
 | [POC 3 — MCP hands-on learning guide](POC%203%20--%20MCP-Hands-on-Example.md) | Planned Model Context Protocol (MCP) experiment | The guide outlines a future step: expose POC 1 retrieval through MCP and explore its primitives, transports, gateways, and security boundaries. |
+| [POC 4 — Azure AI Search hands-on lab](poc4-azure-ai-search-lab/README.md) | Managed vector search with integrated vectorization, run in the Azure portal | Rebuilds POC 1 retrieval on Azure AI Search, enforces the safety rules with pre-filtered vector queries, and tests a managed knowledge base against the same cases. |
 
 The [POC 1 build specification](POC%201%20--%20Health%20Content%20Recommender%20%28RAG%29.md)
 and [POC 2 build specification](POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md)
@@ -48,6 +50,8 @@ show how the experiments are scoped for AI-assisted implementation.
 - Check out **POC 2** if you want to see validation, retries, fallback handling,
   and framework comparison in the same setup.
 - POC 3 is currently a **planned learning guide**, not a runnable implementation.
+- Try **POC 4** if you want to see the same retrieval and safety rules on a
+  managed Azure service, step by step in the portal, with no code to run.
 - Follow each project's README for setup details, prerequisites, commands, tests,
   and expected results. POC 2 uses a separate database and port so it can run
   alongside POC 1.

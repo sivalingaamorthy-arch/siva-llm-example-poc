@@ -1,0 +1,10 @@
+{
+  "name": "articles-blob",
+  "type": "azureblob",
+  "credentials": {
+    "connectionString": "DefaultEndpointsProtocol=https;AccountName=<your-storage-account>;AccountKey=<your-storage-key>;EndpointSuffix=core.windows.net"
+  },
+  "container": {
+    "name": "articles"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "count": true,
+  "select": "id, title, approved",
+  "filter": "approved eq false"
+}
