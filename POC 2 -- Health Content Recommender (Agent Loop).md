@@ -1,6 +1,11 @@
-# POC 2 — Well-being Recommender: Agent Framework Comparison
+# POC 2 — Health Content Agent Loop: Framework Comparison
 
-Self-contained Codespaces learning POC. It shares no runtime code or database with POC 1: it has its own app folder, PostgreSQL database, synthetic data copy, and retrieval implementation. Its data and models match POC 1 so the framework runs can be compared.
+This is the build specification for the second experiment in my public AI
+learning journey. It is self-contained and shares no runtime code or database
+with POC 1: it has its own app folder, PostgreSQL database, synthetic data copy,
+and retrieval implementation. Its data and models match POC 1 so the framework
+runs can be compared. The specification and implementation are developed with
+AI coding agents and are intended to make the trade-offs inspectable.
 
 This POC implements the same bounded retrieve → validate → retry → fallback behavior three ways: **LangChain tool-calling agent**, **LangGraph state graph**, and **Agno tool-calling agent**. A Streamlit UI lets you run the same synthetic report through each implementation.
 
@@ -10,7 +15,15 @@ This POC implements the same bounded retrieve → validate → retry → fallbac
 
 Same feature as POC 1, built as an agent loop. A **retriever agent** proposes the top 3 physical and top 3 mental articles. A **validator agent** checks them. On failure the validator sends feedback and the retriever tries again, up to **3 retries**. If it still fails, a **fallback** shows safe default content, raises a content-gap alert, and flags the case for reassessment.
 
-**What I want to learn:** compare LangChain and Agno tool-using agents with explicit LangGraph nodes and conditional edges; deterministic maker-checker validation; bounded retries; safe fallback; and traces for every iteration.
+**Learning objective:** understand what an agent loop adds to the fixed RAG
+pipeline, then compare LangChain and Agno tool-using agents with explicit
+LangGraph nodes and conditional edges. Focus on deterministic maker-checker
+validation, bounded retries, fallback behavior, and traces for every iteration.
+
+**Where it can break:** retries cannot create missing content, model judgments
+can vary, and fallback defaults may not fit a particular case. The loop also
+adds latency, API usage, and more states to test. It should remain bounded and
+observable; it is not a substitute for complete content or domain expertise.
 
 ## 2. Stack
 
@@ -32,7 +45,7 @@ Same feature as POC 1, built as an agent loop. A **retriever agent** proposes th
 ## 3. Folder structure
 
 ```
-poc2-wellbeing-agent/
+poc2-health-content-agent/
   README.md
   compose.yaml
   setup_db.sql

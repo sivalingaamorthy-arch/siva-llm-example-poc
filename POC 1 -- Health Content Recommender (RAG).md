@@ -1,14 +1,26 @@
-# POC 1 — Well-being Recommender using RAG (Codespaces)
+# POC 1 — Health Content Recommender using RAG (Codespaces)
 
-Self-contained learning POC for GitHub Codespaces. It shares nothing with POC 2: own folder, own database, own data. Hand this whole spec to one Claude Code session.
+This is the build specification for my first public AI learning experiment. It
+defines a self-contained Codespaces POC with its own folder, database, and
+synthetic data. The specification and implementation are developed with AI
+coding agents; the goal is to make the design choices, checks, and limitations
+visible enough for me and other readers to learn from.
 
-**Instruction to Claude Code:** build in the phases below, one at a time. After each phase, run its checkpoint, show me the output, and stop for my go-ahead before the next phase.
+**Build workflow:** implement the phases below one at a time. After each phase,
+run its checkpoint, report the output, and wait for approval before continuing.
 
 ## 1. Goal
 
 Given a user's health assessment report, return the top 3 physical and top 3 mental well-being articles from a content snapshot, plus a short summary grounded only in those articles. This is a fixed pipeline: parse, retrieve, generate. No loops, no agents.
 
-**What I want to learn:** chunking and embedding, pgvector, hybrid retrieval (metadata filters + vector similarity), grounded generation, and where plain RAG fails.
+**Learning objective:** understand how a plain RAG pipeline retrieves and uses
+source content, and where it fails when similarity is mistaken for relevance or
+the source library lacks the needed content.
+
+**What to observe:** chunking and embedding, pgvector, metadata filters plus
+vector similarity, grounded generation, and the deliberate content-gap case.
+The baseline should make the failure visible rather than hide it behind an
+agent or an automatic fallback.
 
 ## 2. Stack
 
@@ -33,7 +45,7 @@ Given a user's health assessment report, return the top 3 physical and top 3 men
 ## 3. Folder structure
 
 ```
-poc1-wellbeing-rag/
+poc1-health-content-rag/
   README.md
   compose.yaml
   setup_db.sql
@@ -139,7 +151,7 @@ Agents, retries, validators, application fallbacks, UI authentication, arbitrary
 
 ## 8. README must include
 
-How to start the database, launch the Streamlit UI and CLI, configure the Codespaces API secret, and stop services. Include the three results and a short "What RAG got wrong on R3" section with the scores. This feeds my interview talking points.
+How to start the database, launch the Streamlit UI and CLI, configure the Codespaces API secret, and stop services. Include the three results and a short "What RAG got wrong on R3" section with the scores so readers can inspect the failure and reproduce it.
 
 ## 9. Optional extensions (only after Phase 5 works, one at a time)
 

@@ -1,4 +1,4 @@
-# POC 2 — Well-being Recommender: Agent Framework Comparison
+# POC 2 — Health Content Agent Loop: Framework Comparison
 
 POC2 compares three ways to build an agent-style review loop over the same synthetic wellness content:
 
@@ -9,6 +9,15 @@ POC2 compares three ways to build an agent-style review loop over the same synth
 All three use a shared Python retrieval/rules layer, the OpenAI API, and a separate PostgreSQL/pgvector database. The Streamlit UI runs the same report with any selected framework.
 
 > Educational software only, not a medical or clinical system. Use only the bundled synthetic reports. Report notes and retrieved article text are sent to OpenAI; never use real health or personal data.
+
+## Learning objective
+
+This experiment adds an iterative agent loop to POC 1's retrieval pattern:
+retrieve candidates, check them, retry with feedback within a fixed budget, and
+fall back when the checks still fail. Compare LangChain, LangGraph, and Agno
+while holding the data and core rules constant. These specifications and
+implementations are developed with AI coding agents; use the tests and traces
+to check what the agents and the application actually do.
 
 ## Implementation summary
 
@@ -30,6 +39,16 @@ An agent workflow here works like a small team:
 - The **fallback** avoids presenting rejected recommendations as suitable when the loop cannot find a passing set.
 
 R2 makes the separation visible: the retriever may surface a hypertension-contraindicated/high-intensity article; deterministic rules reject it, and a later attempt must use safer candidates. R3 has no postpartum article, so topic coverage fails on each attempt and the system falls back rather than pretending a nearest-neighbor match is relevant.
+
+## Where the agent loop breaks
+
+The loop is bounded, not autonomous problem-solving. It cannot create missing
+source content, and fallback defaults are generic rather than personalized.
+Model-based relevance judgments can vary, while every judge or retry can add
+latency, API usage, and more behavior to test. Deterministic rules reduce some
+risks but are only as complete as the rules implemented here; they do not make
+this a clinical safety system. Inspect the per-attempt trace to see whether a
+retry changed the candidate set and whether the final result passed or fell back.
 
 The judge treats normalized report markers as topics (for example, `poor_sleep` means fewer than six hours of sleep, and `high_bmi` means BMI of 30 or higher). It evaluates the candidates collectively: an article can be relevant to one marker while another article covers a different marker. Article titles and body text are the primary evidence; `condition_tags` are relevance metadata that help interpret the match, not a replacement for relevant content. This avoids rejecting a useful recommendation merely because it does not individually cover every marker, while still failing closed when the set leaves a marker or an unmatched report topic uncovered.
 
@@ -62,7 +81,7 @@ The LangGraph version represents this diagram directly as a `StateGraph`. LangCh
 
 ## Setup in Codespaces
 
-Run commands from `poc2-wellbeing-agent/`:
+Run commands from `poc2-health-content-agent/`:
 
 ```bash
 python3 -m venv .venv

@@ -1,8 +1,17 @@
-# POC 1 — Well-being Recommender using RAG
+# POC 1 — Health Content Recommender with RAG
 
 Codespaces-ready, self-contained RAG learning POC. The Python application runs in the Codespace, PostgreSQL 16 with pgvector runs in Docker Compose, and OpenAI provides embeddings and grounded summaries. The Streamlit UI and CLI call the same pipeline.
 
 > Use only the bundled synthetic reports. This is an educational demo, not medical advice. Do not submit real health or other personal data: report notes and retrieved article text are sent to the OpenAI API.
+
+## Learning objective
+
+This baseline demonstrates what retrieval-augmented generation (RAG) does:
+retrieve source content first, then use that content to ground a generated
+summary. Follow the explicit parse → retrieve → generate pipeline before
+looking at the agent loop in POC 2. The specification and implementation are
+developed with AI coding agents; inspect the code, tests, and run outputs rather
+than treating generated code or text as automatically correct.
 
 ## Implementation summary
 
@@ -71,7 +80,7 @@ API calls incur usage-based charges and can be rate-limited or unavailable. The 
 
 ## Setup
 
-Run commands from this folder (`poc1-wellbeing-rag/`):
+Run commands from this folder (`poc1-health-content-rag/`):
 
 ```bash
 python3 -m venv .venv
@@ -146,6 +155,13 @@ Inspect the output JSON files for the actual article IDs, scores, and summaries 
 ### What RAG got wrong on R3
 
 R3 describes a concern not covered by the content snapshot. The baseline retriever still returns the closest eligible articles, even when they are irrelevant. The UI marks this case as a content-gap demonstration; compare the articles and similarity scores with the report notes. No postpartum-specific article is present in the snapshot.
+
+This is the central limitation to look for: a high similarity score is not proof
+of relevance, and this baseline has no relevance threshold or validation loop
+that can reject the result. RAG can ground generation in retrieved text, but it
+cannot supply missing knowledge or guarantee that the retrieved text is suitable.
+POC 2 explores one way to handle that failure mode, with additional complexity
+and model calls.
 
 ## Start and stop the database
 

@@ -1,51 +1,45 @@
-# My LLM Learning POCs
+# Public AI learning journey
 
-This is my personal playground for learning and experimenting with LLM-based ideas.
-I built this repo to explore what is possible with language models in a hands-on,
-practical way. These are small proof-of-concept projects, not polished production
-systems — just easy-to-follow examples you can run, inspect, and learn from.
+This repository documents a hands-on learning journey through AI application
+patterns: what each pattern does, how it is put together, and where it breaks.
+Each proof of concept (POC) is a small, inspectable experiment rather than a
+production system. The specifications and implementations are developed with
+AI coding agents; I use the projects to learn, test the results, and share the
+trade-offs and limitations publicly.
 
-A bit of the code in here was generated or assisted by LLMs, and that is part of
-what I want to show: AI can speed up prototyping, help turn rough ideas into
-working code, and make it easier to explore different patterns quickly.
+The examples use a fictional health-content recommendation scenario because it
+makes retrieval, relevance, and safety trade-offs visible. They are educational
+software only, not medical or clinical systems.
 
-I am not trying to present this as a clinical or production-grade solution. The
-main goal is simple: learn by building, share what I find, and keep the workflow
-transparent, grounded, and easy to reason about.
+## The learning path
 
-## Why these examples?
-
-These projects are meant to make the difference between a plain RAG flow and an
-agent loop easy to see. POC 1 is a good starting point: it shows the basics of
-retrieval and grounded generation in a simple, explicit pipeline. POC 2 builds on
-that by adding validation, retries, fallback logic, and framework comparisons.
-
-They are intentionally small and inspectable rather than full health systems. That
-makes them useful for understanding patterns around retrieval, orchestration,
-validation, and safety without treating an LLM as the final source of truth.
+The POCs explore patterns in sequence. POC 1 is a baseline, POC 2 adds an
+iterative orchestration pattern, and POC 3 is the next planned experiment.
 
 | Example | Approach | What it demonstrates |
 |---|---|---|
-| [POC 1 — RAG recommender](poc1-wellbeing-rag/README.md) | A simple retrieval-augmented generation (RAG) pipeline | Parses report markers, fetches relevant content using PostgreSQL/pgvector, and generates grounded summaries. |
-| [POC 2 — Agent framework comparison](poc2-wellbeing-agent/README.md) | A bounded retrieve, validate, retry, and fallback loop | Compares LangChain, LangGraph, and Agno on the same retrieval and safety workflow. |
+| [POC 1 — Health Content RAG](poc1-health-content-rag/README.md) | Fixed retrieval-augmented generation (RAG) pipeline | Shows how retrieval can ground a response, and how nearest-neighbor search can still return irrelevant content when the library has a gap. |
+| [POC 2 — Health Content Agent Loop](poc2-health-content-agent/README.md) | Bounded retrieve, validate, retry, and fallback loop | Compares LangChain, LangGraph, and Agno orchestration, and shows the added complexity, latency, and model calls of an agent loop. |
+| [POC 3 — MCP hands-on learning guide](POC%203%20--%20MCP-Hands-on-Example.md) | Planned Model Context Protocol (MCP) experiment | The guide outlines a future step: expose POC 1 retrieval through MCP and explore its primitives, transports, gateways, and security boundaries. |
 
-The longer [POC 1 design](POC%201%20%E2%80%94%20Well-being%20Recommender%20(RAG).md)
-and [POC 2 design](POC%202%20%E2%80%94%20Well-being%20Recommender%20(Agent%20Loop).md)
-documents explain the architecture, workflow, and learning goals in more detail.
+The [POC 1 build specification](POC%201%20--%20Health%20Content%20Recommender%20%28RAG%29.md)
+and [POC 2 build specification](POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md)
+show how the experiments are scoped for AI-assisted implementation.
 
 ## What you can learn
 
-- How to turn report fields into searchable topic markers and retrieve
-  category-specific content with embeddings, metadata filters, and PostgreSQL/pgvector.
-- How to keep generated summaries grounded in fetched article content.
-- How to separate deterministic rules (such as approval, contraindications,
-  category checks, and result counts) from an LLM's semantic judgment.
-- How retry loops, rejected-item tracking, and safe fallbacks behave when a
-  result is uncertain or no relevant content is found.
-- How the same workflow can look as a plain Python pipeline, a LangChain agent,
-  a LangGraph workflow, and an Agno agent.
-- How to inspect run traces and compare trade-offs like complexity,
-  explainability, latency, and API usage.
+- **RAG:** convert a question into a search, retrieve relevant source material,
+  and use that material to ground generation. Observe how similarity ranking,
+  fixed filters, and a content gap affect the result.
+- **Agent loops:** add a judge, bounded retries, and fallback behavior around
+  retrieval. Compare framework orchestration while keeping the data and rules
+  consistent.
+- **Evaluation and limits:** inspect traces and test cases to see where
+  deterministic checks help, where model judgments vary, and what added calls
+  and orchestration complexity cost.
+- **AI-assisted development:** follow the specs, implementation, tests, and
+  documented outcomes to see how AI coding agents can support a learning
+  project—and why their output still needs review and validation.
 
 ## Where to start
 
@@ -53,6 +47,7 @@ documents explain the architecture, workflow, and learning goals in more detail.
   baseline without agent frameworks.
 - Check out **POC 2** if you want to see validation, retries, fallback handling,
   and framework comparison in the same setup.
+- POC 3 is currently a **planned learning guide**, not a runnable implementation.
 - Follow each project's README for setup details, prerequisites, commands, tests,
   and expected results. POC 2 uses a separate database and port so it can run
   alongside POC 1.
