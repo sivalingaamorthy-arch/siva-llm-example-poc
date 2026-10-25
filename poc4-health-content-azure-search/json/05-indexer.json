@@ -1,7 +1,7 @@
 {
   "name": "articles-indexer",
   "dataSourceName": "articles-blob",
-  "targetIndexName": "wellbeing-articles",
+  "targetIndexName": "health-content-articles",
   "skillsetName": "articles-embed",
   "parameters": {
     "configuration": {
