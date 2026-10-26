@@ -81,7 +81,7 @@ AGENT AI Samples/
     summary_v1.txt
   tests/
     test_rules_tool.py
-    test_graph_paths.py
+    test_agent_paths.py
   output/
     runs/                  # JSON result + trace, separated per framework
     content_gap_alerts.jsonl

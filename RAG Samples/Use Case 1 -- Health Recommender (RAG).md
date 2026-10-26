@@ -133,7 +133,7 @@ copies.
 
 **Phase 2 — Ingest.** Embed title + body per article using the configured OpenAI embedding model (one chunk per article is fine at this size; note in README when chunking would matter). *Checkpoint:* every row has a 1536-dimension embedding.
 
-**Phase 3 — Retrieval.** Parse report into markers. For each category, query = markers + notes. Hybrid retrieval: SQL filter first (`approved = true`, `is_default = false`, category match, no overlap between contraindications and the user's markers), then rank by cosine similarity, top 3. Return the similarity score with each result. *Checkpoint:* retrieval results and scores are available to the UI for all 3 reports.
+**Phase 3 — Retrieval.** Parse report into markers. For each category, query = markers + notes. Apply SQL filters first (`approved = true`, `is_default = false`, category match, no overlap between contraindications and the user's markers), then rank eligible articles by cosine similarity and return the top 3. This is metadata-filtered vector retrieval, not keyword-plus-vector hybrid search. Return the similarity score with each result. *Checkpoint:* retrieval results and scores are available to the UI for all 3 reports.
 
 **Phase 4 — Generation.** Load `prompts/summary_v1.txt`. The prompt must use only the retrieved articles, cite them by id, give no diagnosis or medical advice, and say "speak to a health adviser" when a risk marker is present. *Checkpoint:* generated summaries for all 3 reports are visible in the UI.
 
