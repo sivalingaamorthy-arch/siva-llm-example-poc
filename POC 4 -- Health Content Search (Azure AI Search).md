@@ -81,13 +81,13 @@ poc4-health-content-azure-search/
 
 ## 4. Data
 
-Reuse the POC 1 content snapshot and reports unchanged (article schema, seed
-rules, the three reports and the marker rules are defined in the POC 1
-specification, sections 4.1–4.4).
+Use the shared content catalog and reports from
+`Sample-Data-Health-Content/sample-data/`. The shared README describes the
+article schema, seed rules, three reports, and evaluation markers.
 
 ### 4.1 Prepared articles — `json/01-articles_prepared.json`
 
-Generated from `poc1-health-content-rag/data/articles.json`:
+Generated from `Sample-Data-Health-Content/sample-data/articles.json`:
 
 - `published_date` becomes a full ISO timestamp (`2026-01-15T00:00:00Z`),
   because `Edm.DateTimeOffset` rejects a bare date.

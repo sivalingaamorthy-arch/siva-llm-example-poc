@@ -1,0 +1,30 @@
+[project]
+name = "poc3-health-content-mcp"
+version = "0.1.0"
+description = "Hands-on MCP server wrapping the POC 1 synthetic health-content retrieval demo"
+readme = "README.md"
+authors = [
+    { name = "sivalingaamorthy-arch", email = "sivalingaamorthy@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=2.3.0,<3",
+    "openai>=1.68,<3",
+    "pgvector>=0.4,<1",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic>=2.10,<3",
+    "python-dotenv>=1,<2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+]
+
+[project.scripts]
+poc3-health-content-mcp = "poc3_health_content_mcp:main"
+poc3-health-content-mcp-client = "poc3_health_content_mcp.client:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"

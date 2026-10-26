@@ -99,12 +99,12 @@ How it compares with POC 1:
 | Data checks | [`json/10`–`12-query-*.json`](./json/) | Document count, safety field values, unapproved articles. |
 | Acceptance cases | [`json/13`–`17-query-*.json`](./json/) | R1, R2 filtered and unfiltered, R3 vector and hybrid. |
 
-`01-articles_prepared.json` was generated from
-`poc1-health-content-rag/data/articles.json` with this one-off snippet:
+`01-articles_prepared.json` was generated from the shared canonical catalog at
+`Sample-Data-Health-Content/sample-data/articles.json` with this one-off snippet:
 
 ```python
 import json
-arts = json.load(open("poc1-health-content-rag/data/articles.json"))
+arts = json.load(open("Sample-Data-Health-Content/sample-data/articles.json"))
 for a in arts:
     a["published_date"] = f"{a['published_date']}T00:00:00Z"   # Edm.DateTimeOffset needs a full timestamp
     a["embed_text"] = f"{a['title']}\n\n{a['body']}"           # the only text sent to the embedding model

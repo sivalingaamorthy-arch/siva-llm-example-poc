@@ -1,0 +1,42 @@
+{
+  "name": "health-content-recommendation-cases",
+  "version": 1,
+  "description": "Synthetic scenarios for comparing retrieval, deterministic safety checks, and bounded agent recovery. This is not clinical ground truth.",
+  "cases": [
+    {
+      "report_id": "R1",
+      "report_file": "reports/report1_happy_path.json",
+      "purpose": "Baseline retrieval when the synthetic report has topics represented by approved sample articles.",
+      "expected_markers": ["high_bmi", "poor_sleep", "sedentary", "stress"],
+      "expected_unmatched_topics": [],
+      "reference_checks": [
+        "Return only approved, non-default article candidates in the RAG results.",
+        "The agent-loop result should be checked for the requested physical and mental category counts."
+      ]
+    },
+    {
+      "report_id": "R2",
+      "report_file": "reports/report2_safety_trap.json",
+      "purpose": "Exercise hypertension and prediabetes handling and the high-intensity physical-content restriction.",
+      "expected_markers": ["hypertension", "prediabetes"],
+      "expected_unmatched_topics": [],
+      "reference_checks": [
+        "Final physical recommendations must not include high-intensity content when hypertension is present.",
+        "Final recommendations must not include articles contraindicated by the report markers.",
+        "The agent-loop trace should show deterministic rejection and a bounded retry when an unsafe candidate is encountered."
+      ]
+    },
+    {
+      "report_id": "R3",
+      "report_file": "reports/report3_content_gap.json",
+      "purpose": "Show that nearest-neighbor retrieval can return content despite a missing postpartum topic.",
+      "expected_markers": ["poor_sleep"],
+      "expected_unmatched_topics": ["postpartum"],
+      "reference_checks": [
+        "The article catalog intentionally contains no postpartum article.",
+        "Basic RAG may return nearest neighbors; inspect rather than treating similarity as relevance.",
+        "The agent-loop POC should fail closed after its retry budget and use its documented generic fallback."
+      ]
+    }
+  ]
+}

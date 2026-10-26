@@ -1,110 +1,72 @@
 # Public AI learning journey
 
-This repository documents a hands-on learning journey through AI application
-patterns: what each pattern does, how it is put together, and where it breaks.
-Each proof of concept (POC) is a small, inspectable experiment rather than a
-production system. The specifications and implementations are developed with
-AI coding agents; I use the projects to learn, test the results, and share the
-trade-offs and limitations publicly.
+This repository is a collection of small, inspectable AI learning examples.
+Each use case explores an application pattern, how it is assembled, and where
+it can fail. These are educational experiments, not production or clinical
+systems.
 
-They are educational software only, not medical or clinical systems.
+## Start here: shared sample data
 
-## The shared scenario: a health content recommender
+[`Sample-Data-Health-Content/`](./Sample-Data-Health-Content/README.md) is the
+canonical source for the synthetic health-content scenario. It contains the
+shared article catalog, sample reports, evaluation reference, and article
+generator. Start there to understand the data before running a POC.
 
-Every POC in this repository solves the same small problem: given a synthetic
-health assessment report, recommend a few relevant articles from a fixed content
-library. POC 1 builds that scenario from scratch, and every later POC reuses it
-unchanged. Only the pattern being studied changes.
+The applications use separate databases and generated outputs but read the
+same canonical input samples. Set `HEALTH_CONTENT_SAMPLE_DATA` only when the
+shared `sample-data/` directory is not at its default repository location.
 
-**Why health content?** It makes the hard parts of AI retrieval visible. A
-recommendation can be *relevant* yet *unsafe* (high-intensity exercise for
-someone with high blood pressure), *approved* or not, and the library can simply
-*lack* the content a person needs. Those are the same trade-offs that appear in
-any enterprise knowledge or recommendation system, in a form small enough to
-inspect line by line.
+## The shared scenario
 
-**What the scenario contains** (defined in the
-[POC 1 build specification](POC%201%20--%20Health%20Content%20Recommender%20%28RAG%29.md)):
+Every use case works with the same fictional task: given a synthetic health
+assessment report, find a few relevant articles in a fixed content catalog.
+The scenario is intentionally small so retrieval, relevance, safety, and
+content gaps can be inspected.
 
-- **A content library** of 30 synthetic articles across three categories
-  (physical, mental, well-being) plus three generic defaults, from two sources:
-  `vendor` and a fictional in-house publisher, `Everwell`. Each article carries
-  metadata: condition tags, intensity, contraindications, an approval flag and a
-  default flag.
-- **Three synthetic reports**, each designed to test one behaviour:
-  - **R1, happy path:** high BMI, poor sleep, stress, a desk job. Relevant
-    articles exist.
-  - **R2, safety trap:** blood pressure 165/100 and a wish to "get fitter
-    quickly". The closest matches are high-intensity workouts that are
-    contraindicated for hypertension.
-  - **R3, content gap:** "12 weeks postpartum". The library deliberately has no
-    postpartum content.
-- **Fixed rules** that turn report measurements into marker tags (for example,
-  BMI 30 or more adds `high_bmi`) and **safety rules** that must never be broken:
-  never return unapproved or default articles, and never return contraindicated
-  or high-intensity physical content when hypertension is present.
+- **Articles:** 30 synthetic articles across physical, mental, and wellbeing
+  categories, plus three generic defaults. Each includes tags, intensity,
+  contraindications, source, approval status, and default status.
+- **R1 — happy path:** the catalog contains articles matching the report's
+  general topics.
+- **R2 — safety case:** hypertension and prediabetes are present; the report
+  also asks to get fitter quickly. High-intensity and contraindicated physical
+  content must not appear in final recommendations.
+- **R3 — content gap:** the report mentions postpartum concerns, but no
+  postpartum article exists in the catalog. Similarity alone cannot fix that
+  gap.
+- **Evaluation reference:** shared expected markers and behavior checks are in
+  [`recommendation-cases.json`](./Sample-Data-Health-Content/sample-data/evaluation-sets/recommendation-cases.json).
 
-Because the data, reports and rules stay constant, the differences between POCs
-come from the pattern alone. R2 shows whether a design enforces safety, and R3
-shows whether it can admit "I have nothing suitable" instead of returning the
-nearest match.
+The data is fictional, not medical guidance or clinical ground truth. The POCs
+deliberately differ in how they handle R3: baseline retrieval may show nearest
+neighbors, while the agent-loop example demonstrates bounded fallback.
 
-## The learning path
+## Learning path
 
-The POCs explore patterns in sequence. POC 1 is the baseline, POC 2 adds an
-iterative orchestration pattern, POC 3 is a planned protocol experiment, and
-POC 4 moves the POC 1 retrieval onto a managed search service.
+| Use case | Project guide | What it demonstrates |
+|---|---|---|
+| **POC 1 — RAG Samples** | [Project README](./RAG%20Samples/README.md) · [Use Case 1](./RAG%20Samples/Use%20Case%201%20--%20Health%20Recommender%20%28RAG%29.md) | A fixed retrieve/filter/generate pipeline and the limits of similarity when content is missing. |
+| **POC 2 — Agent AI Samples** | [Project README](./AGENT%20AI%20Samples/README.md) · [Use Case 2](./AGENT%20AI%20Samples/POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md) | LangChain, LangGraph, and Agno orchestration with deterministic checks, bounded retries, and fallback. |
+| **POC 3 — MCP Samples** | [Project README](./MCP%20Samples/README.md) · [Use Case 1](./MCP%20Samples/Use%20Case%201%20-%20MCP.md) · [Run notes](./MCP%20Samples/NOTES.md) | Expose a domain capability through MCP; learn tools, resources, prompts, transports, state handles, and security boundaries. |
+| **POC 4 — Azure AI Search** | [Project README](./poc4-health-content-azure-search/README.md) · [Use Case 4](./POC%204%20--%20Health%20Content%20Search%20%28Azure%20AI%20Search%29.md) | A portal-driven managed vector search lab with integrated vectorization, safety filters, and knowledge-base evaluation. |
 
-| Example | Approach | What changes from the baseline | What it demonstrates |
-|---|---|---|---|
-| [POC 1 — Health Content RAG](poc1-health-content-rag/README.md) | Fixed retrieval-augmented generation (RAG) pipeline | — (the baseline) | Shows how retrieval can ground a response, and how nearest-neighbor search can still return irrelevant content when the library has a gap. |
-| [POC 2 — Health Content Agent Loop](poc2-health-content-agent/README.md) | Bounded retrieve, validate, retry, and fallback loop | Orchestration | Compares LangChain, LangGraph, and Agno orchestration, and shows the added complexity, latency, and model calls of an agent loop. |
-| [POC 3 — MCP hands-on learning guide](POC%203%20--%20MCP-Hands-on-Example.md) | Planned Model Context Protocol (MCP) experiment | How retrieval is exposed | The guide outlines a future step: expose POC 1 retrieval through MCP and explore its primitives, transports, gateways, and security boundaries. |
-| [POC 4 — Health Content Search on Azure AI Search](poc4-health-content-azure-search/README.md) | Managed vector search with integrated vectorization, as a portal-driven lab | The retrieval store | Rebuilds POC 1 retrieval on Azure AI Search, enforces the safety rules with pre-filtered vector queries, and tests a managed, LLM-driven knowledge base against the same cases. |
+## What to learn across the examples
 
-The build specifications show how each experiment is scoped for AI-assisted
-implementation:
-[POC 1](POC%201%20--%20Health%20Content%20Recommender%20%28RAG%29.md),
-[POC 2](POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md),
-[POC 3](POC%203%20--%20MCP-Hands-on-Example.md) and
-[POC 4](POC%204%20--%20Health%20Content%20Search%20%28Azure%20AI%20Search%29.md).
+- **Retrieval:** how query embeddings, metadata filters, and similarity rank
+  source content—and why similarity is not a relevance or safety score.
+- **Orchestration:** what validation, retries, and fallback add in exchange for
+  more calls, latency, and complexity.
+- **Integration:** how an existing domain capability can be exposed through
+  MCP without moving domain logic into the host.
+- **Evaluation:** how the same synthetic reports reveal baseline, safety, and
+  content-gap behavior across different implementations.
+- **AI-assisted development:** inspect the specifications, code, tests, and
+  run traces instead of assuming generated code or outputs are correct.
 
-## What you can learn
+## Safety and data handling
 
-- **RAG:** convert a question into a search, retrieve relevant source material,
-  and use that material to ground generation. Observe how similarity ranking,
-  fixed filters, and a content gap affect the result.
-- **Agent loops:** add a judge, bounded retries, and fallback behavior around
-  retrieval. Compare framework orchestration while keeping the data and rules
-  consistent.
-- **Managed search:** see how a cloud search service splits indexing into an
-  index, data source, skillset, indexer and vectorizer, and whether an LLM-driven
-  knowledge base respects rules it was never given.
-- **Evaluation and limits:** inspect traces and test cases to see where
-  deterministic checks help, where model judgments vary, and what added calls
-  and orchestration complexity cost.
-- **AI-assisted development:** follow the specs, implementation, tests, and
-  documented outcomes to see how AI coding agents can support a learning
-  project—and why their output still needs review and validation.
-
-## Where to start
-
-- Start with **POC 1**: it defines the shared scenario and the retrieval and
-  grounded-generation baseline without agent frameworks.
-- Check out **POC 2** if you want to see validation, retries, fallback handling,
-  and framework comparison in the same setup.
-- POC 3 is currently a **planned learning guide**, not a runnable implementation.
-- Try **POC 4** if you want to see the same retrieval and safety rules on a
-  managed Azure service, step by step in the portal, with no code to run.
-- Follow each project's README for setup details, prerequisites, commands, tests,
-  and expected results. POC 2 uses a separate database and port so it can run
-  alongside POC 1.
-
-## Important limits
-
-These are educational demos, not medical or clinical systems, and they do not
-provide diagnosis or personalized health advice. Use only the bundled synthetic
-reports; do not submit real health or personal data. The examples send report
-information and retrieved article text to the configured OpenAI or Azure OpenAI
-API. API requests can incur charges and require model access and billing to be
-enabled. Never commit API keys or generated sensitive data.
+Use only the bundled synthetic reports. Do not submit real health, personal, or
+otherwise sensitive data. The examples may send synthetic report notes, article
+text, or prompts to configured model APIs. API calls can incur charges and
+depend on account access and billing. Never commit API keys, `.env` files with
+real credentials, or sensitive generated outputs.
