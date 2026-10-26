@@ -1,4 +1,4 @@
-# POC 4 — Health Content Search on Azure AI Search
+# UC 1 — Health Content Search on Azure AI Search
 
 Portal-driven hands-on lab. It rebuilds POC 1's retrieval step on Azure AI
 Search with integrated vectorization, using the same 33 synthetic articles, the

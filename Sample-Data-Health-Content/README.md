@@ -26,8 +26,9 @@ gap, while the agent-loop POC demonstrates a bounded fallback.
 The RAG and Agent AI projects load the canonical `articles.json` when seeding
 their separate PostgreSQL databases. Their report selectors and CLI commands
 read the shared `reports/` files. MCP loads the same fixtures and article
-catalog, while Azure AI Search's `json/01-articles_prepared.json` is a
-service-specific prepared snapshot derived from the canonical article file.
+catalog, while [Vector Search's prepared article snapshot](../VECTOR%20Samples/json/01-articles_prepared.json)
+is derived from the canonical article file for Azure AI Search's indexing
+requirements.
 
 By default, the source path is resolved relative to the repository, so run
 commands from each project's own folder as described in that project's README.

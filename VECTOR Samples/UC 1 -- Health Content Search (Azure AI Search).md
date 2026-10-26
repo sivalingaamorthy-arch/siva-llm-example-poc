@@ -1,4 +1,4 @@
-# POC 4 — Health Content Search on Azure AI Search (hands-on lab)
+# UC 1 — Health Content Search on Azure AI Search (hands-on lab)
 
 This is the lab specification for the fourth experiment in my public AI learning
 journey. It takes POC 1's retrieval step and rebuilds it on a managed service,
@@ -61,8 +61,9 @@ and whether an LLM-driven knowledge base respects rules it was never given.
 ## 3. Folder structure
 
 ```
-poc4-health-content-azure-search/
+VECTOR Samples/
   README.md                          # the hands-on lab
+  UC 1 -- Health Content Search (Azure AI Search).md
   json/
     01-articles_prepared.json        # POC 1 articles + embed_text, ISO dates
     02-index.json                    # index schema, HNSW, vectorizer

@@ -48,7 +48,7 @@ neighbors, while the agent-loop example demonstrates bounded fallback.
 | **POC 1 — RAG Samples** | [Project README](./RAG%20Samples/README.md) · [Use Case 1](./RAG%20Samples/Use%20Case%201%20--%20Health%20Recommender%20%28RAG%29.md) | A fixed retrieve/filter/generate pipeline and the limits of similarity when content is missing. |
 | **POC 2 — Agent AI Samples** | [Project README](./AGENT%20AI%20Samples/README.md) · [Use Case 2](./AGENT%20AI%20Samples/POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md) | LangChain, LangGraph, and Agno orchestration with deterministic checks, bounded retries, and fallback. |
 | **POC 3 — MCP Samples** | [Project README](./MCP%20Samples/README.md) · [Use Case 1](./MCP%20Samples/Use%20Case%201%20-%20MCP.md) · [Run notes](./MCP%20Samples/NOTES.md) | Expose a domain capability through MCP; learn tools, resources, prompts, transports, state handles, and security boundaries. |
-| **POC 4 — Azure AI Search** | [Project README](./poc4-health-content-azure-search/README.md) · [Use Case 4](./POC%204%20--%20Health%20Content%20Search%20%28Azure%20AI%20Search%29.md) | A portal-driven managed vector search lab with integrated vectorization, safety filters, and knowledge-base evaluation. |
+| **POC 4 — Vector Search (Azure AI Search)** | [Project README](./VECTOR%20Samples/README.md) · [Use Case 1](./VECTOR%20Samples/UC%201%20--%20Health%20Content%20Search%20%28Azure%20AI%20Search%29.md) | A portal-driven managed vector search lab with integrated vectorization, safety filters, and knowledge-base evaluation. |
 
 ## What to learn across the examples
 
