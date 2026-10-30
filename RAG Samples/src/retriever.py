@@ -45,7 +45,7 @@ def _recommendations_for_category(
 ) -> list[Recommendation]:
     settings = get_settings()
     query = " ".join([*markers, report.notes]).strip()
-    vector = embed_texts(client, [query or "general well-being"], settings.embedding_model)[0]
+    vector = embed_texts(client, [query or "general health"], settings.embedding_model)[0]
     if len(vector) != settings.embedding_dimensions:
         raise PocError(
             "Embedding API returned an unexpected vector dimension; check the "

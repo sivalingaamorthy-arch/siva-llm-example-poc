@@ -1,1 +1,1 @@
-"""Well-being RAG proof of concept."""
+"""Health RAG proof of concept."""

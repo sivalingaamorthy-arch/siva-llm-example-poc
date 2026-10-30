@@ -13,7 +13,7 @@ run its checkpoint, report the output, and wait for approval before continuing.
 
 ## 1. Goal
 
-Given a user's health assessment report, return the top 3 physical and top 3 mental well-being articles from a content snapshot, plus a short summary grounded only in those articles. This is a fixed pipeline: parse, retrieve, generate. No loops, no agents.
+Given a user's health assessment report, return the top 3 physical and top 3 mental health articles from a content snapshot, plus a short summary grounded only in those articles. This is a fixed pipeline: parse, retrieve, generate. No loops, no agents.
 
 **Learning objective:** understand how a plain RAG pipeline retrieves and uses
 source content, and where it fails when similarity is mistaken for relevance or
@@ -27,7 +27,7 @@ agent or an automatic fallback.
 ### 1.1 Architecture at a glance (C4)
 
 Read the diagram top-down: **C1 Context** shows who uses the system and what it
-talks to, **C2 Container** zooms into the Wellbeing Recommender, and **C3
+talks to, **C2 Container** zooms into the Health Recommender, and **C3
 Component** zooms into the RAG pipeline. The numbered arrows (1)–(7) in C3 are the
 same parse → retrieve → generate flow that the build phases below implement.
 
@@ -117,7 +117,7 @@ Do not create an application-local copy. The common evaluation cases and the
 three report fixtures are under
 [`../Sample-Data-Health-Content/sample-data/`](../Sample-Data-Health-Content/README.md).
 
-- 30 articles: 10 physical, 10 mental, 10 well-being. Mix of vendor and Everwell sources.
+- 30 articles: 10 physical, 10 mental, 10 health. Mix of vendor and Everwell sources.
 - 3 articles with `approved: false` (must never be returned).
 - 2 high-intensity physical articles with `contraindications: ["hypertension"]`.
 - At least 3 articles each for stress, poor\_sleep, high\_bmi, hypertension-safe low-intensity exercise, and prediabetes diet.

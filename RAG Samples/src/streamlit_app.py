@@ -17,8 +17,8 @@ REPORTS = {
     "R3 — Content gap (postpartum)": "report3_content_gap.json",
 }
 
-st.set_page_config(page_title="Well-being RAG POC 1", page_icon="📚", layout="wide")
-st.title("Well-being Recommender — RAG testing")
+st.set_page_config(page_title="Health RAG POC 1", page_icon="📚", layout="wide")
+st.title("Health Recommender — RAG testing")
 st.caption(
     "Synthetic learning demo only. Not medical advice; do not enter real health data."
 )
@@ -48,7 +48,7 @@ if result_payload and result_payload["report_id"] == report.report_id:
         f"Embeddings: {result_payload['embedding_model']}"
     )
 
-    for key, heading in (("physical", "Physical recommendations"), ("mental", "Mental well-being recommendations")):
+    for key, heading in (("physical", "Physical recommendations"), ("mental", "Mental health recommendations")):
         st.subheader(heading)
         recommendations = result_payload[key]
         if not recommendations:

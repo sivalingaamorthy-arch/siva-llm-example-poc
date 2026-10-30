@@ -12,7 +12,7 @@ from src.vendor_loader import seed_database
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run the well-being RAG POC.")
+    parser = argparse.ArgumentParser(description="Run the health RAG POC.")
     actions = parser.add_mutually_exclusive_group(required=True)
     actions.add_argument("--preflight", action="store_true", help="Check Codespaces prerequisites.")
     actions.add_argument("--setup-db", action="store_true", help="Create the database schema.")
