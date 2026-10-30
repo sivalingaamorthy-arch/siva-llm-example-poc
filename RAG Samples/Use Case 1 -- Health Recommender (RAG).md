@@ -24,6 +24,37 @@ vector similarity, grounded generation, and the deliberate content-gap case.
 The baseline should make the failure visible rather than hide it behind an
 agent or an automatic fallback.
 
+### 1.1 Architecture at a glance (C4)
+
+Read the diagram top-down: **C1 Context** shows who uses the system and what it
+talks to, **C2 Container** zooms into the Wellbeing Recommender, and **C3
+Component** zooms into the RAG pipeline. The numbered arrows (1)–(7) in C3 are the
+same parse → retrieve → generate flow that the build phases below implement.
+
+![C4 diagram of POC 1 — context, container and component views](./C4-Diagram-RAG.png)
+
+Editable source: [`C4-Diagram-RAG.drawio`](./C4-Diagram-RAG.drawio). The PNG is
+rendered from it with `python scripts/render_drawio.py C4-Diagram-RAG.drawio C4-Diagram-RAG.png`.
+
+**Where each diagram element lives in this spec and the code:**
+
+| C4 element | Level | Build phase | Implementation |
+|---|---|---|---|
+| Member / Member Dashboard | C1–C3 | Phase 5 | Streamlit testing UI — [`src/streamlit_app.py`](./src/streamlit_app.py) (CLI equivalent: [`src/rag_app.py`](./src/rag_app.py)) |
+| Vendor System (article supply) | C1–C2 | Phase 1 | Shared catalog in [`../Sample-Data-Health-Content/sample-data/`](../Sample-Data-Health-Content/sample-data/), loaded by [`src/vendor_loader.py`](./src/vendor_loader.py) |
+| Article Ingestion Engine | C2 | Phase 2 | [`src/ingest.py`](./src/ingest.py) — embeds title + body once per article |
+| Article Store | C2–C3 | Phase 1 | PostgreSQL 16 + pgvector — [`compose.yaml`](./compose.yaml), [`setup_db.sql`](./setup_db.sql), [`src/db.py`](./src/db.py) |
+| RAG Pipeline | C2 | Phases 3–4 | [`src/pipeline.py`](./src/pipeline.py) — runs the steps in order and saves `output/<report_id>.json` |
+| Parser — step (1)–(2) | C3 | Phase 3 | [`src/report_parser.py`](./src/report_parser.py) — marker rules in §4.4 |
+| Retriever — steps (3)–(5) | C3 | Phase 3 | [`src/retriever.py`](./src/retriever.py) — SQL safety filters first, then cosine ranking. Labelled "Hybrid Retriever" in the diagram, but it is metadata-filtered vector retrieval, not keyword + vector hybrid search (see Phase 3). |
+| Summary Generator — steps (6)–(7) | C3 | Phase 4 | [`src/generator.py`](./src/generator.py) with [`prompts/summary_v1.txt`](./prompts/summary_v1.txt) |
+| OpenAI API | C1–C3 | Phases 2–4 | [`src/openai_client.py`](./src/openai_client.py) — embeddings and summary; the only external call |
+
+The safety rules sit on the C3 arrow between the Retriever and the Article Store
+(step 4): unsafe articles are removed *before* similarity ranking. The
+[README's "See it first" section](./README.md#see-it-first) shows the result of
+that step for R1–R3.
+
 ## 2. Stack
 
 - Python 3.12 or newer from the Codespace image, in a project-local virtual environment
