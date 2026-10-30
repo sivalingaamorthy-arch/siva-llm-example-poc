@@ -1,4 +1,4 @@
-# Public AI learning journey
+# AI learning journey
 
 This repository is a collection of small, inspectable AI learning examples.
 Each use case explores an application pattern, how it is assembled, and where
