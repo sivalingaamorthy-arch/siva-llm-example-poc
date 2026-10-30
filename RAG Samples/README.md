@@ -9,6 +9,44 @@ this project keeps its own database, prompts, and run outputs.
 
 > Use only the bundled synthetic reports. This is an educational demo, not medical advice. Do not submit real health or other personal data: report notes and retrieved article text are sent to the OpenAI API.
 
+## See it first
+
+### Architecture (C4: context → container → component)
+
+![C4 diagram of the RAG POC](./C4-Diagram-RAG.png)
+
+Editable source: [`C4-Diagram-RAG.drawio`](./C4-Diagram-RAG.drawio) (open in [diagrams.net](https://app.diagrams.net) or the VS Code Draw.io extension). The PNG is generated from it with `python scripts/render_drawio.py C4-Diagram-RAG.drawio C4-Diagram-RAG.png`; regenerate it whenever the diagram changes.
+
+### Testing screen — choose a synthetic report
+
+![Streamlit testing screen with report R1 selected](./docs/screenshots/01-streamlit-input.png)
+
+### What the pipeline does before any model call
+
+For each bundled report, the parser turns measurements into marker tags, and the fixed safety rules remove articles before vector ranking. This image is produced by the project's own `report_parser` and `is_safe_candidate` code, so it needs no API key. Look at **R2**: the two high-intensity, hypertension-contraindicated articles never reach the ranker. Look at **R3**: "postpartum" exists only in the note, not as a marker or an article.
+
+![Report to markers to safety-filtered candidate pool for R1, R2 and R3](./docs/screenshots/02-pipeline-safety-filter.png)
+
+### Full results (ranked articles, similarity scores, cited summary)
+
+These screens need a real run with `OPENAI_API_KEY`, so they are captured from your own Codespace rather than mocked. After the setup steps below, with Streamlit running on port 8501:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m playwright install --with-deps chromium
+python scripts/capture_screenshots.py          # writes docs/screenshots/03-result-R1.png … 05-result-R3.png
+```
+
+Then add them here:
+
+```markdown
+![R1 result](./docs/screenshots/03-result-R1.png)
+![R2 result](./docs/screenshots/04-result-R2.png)
+![R3 result — content gap](./docs/screenshots/05-result-R3.png)
+```
+
+`python scripts/capture_screenshots.py --offline` regenerates the two images above without an API key.
+
 ## Learning objective
 
 This baseline demonstrates what retrieval-augmented generation (RAG) does:
