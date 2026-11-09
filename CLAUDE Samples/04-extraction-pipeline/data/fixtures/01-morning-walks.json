@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Ten-Minute Morning Walks and Everyday Energy",
+    "summary": "A short daily morning walk can improve alertness; start at ten minutes and build up gradually.",
+    "category": "physical",
+    "condition_tags": [
+      "sedentary"
+    ],
+    "intensity": "low",
+    "contraindications": [],
+    "evidence_quote": null,
+    "author": "Anita Rao",
+    "confidence": 0.95,
+    "uncertain_fields": []
+  }
+]

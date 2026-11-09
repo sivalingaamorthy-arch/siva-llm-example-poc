@@ -1,0 +1,19 @@
+[
+  {
+    "title": "Evening Wind-Down Tips",
+    "summary": "Informal tips for evenings: dim lights, put the phone away and keep a regular bedtime.",
+    "category": "wellbeing",
+    "condition_tags": [
+      "poor_sleep"
+    ],
+    "intensity": "low",
+    "contraindications": [],
+    "evidence_quote": null,
+    "author": null,
+    "confidence": 0.6,
+    "uncertain_fields": [
+      "category",
+      "title"
+    ]
+  }
+]
