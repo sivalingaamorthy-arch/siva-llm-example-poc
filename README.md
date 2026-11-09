@@ -49,6 +49,10 @@ neighbors, while the agent-loop example demonstrates bounded fallback.
 | **POC 2 — Agent AI Samples** | [Project README](./AGENT%20AI%20Samples/README.md) · [Use Case 2](./AGENT%20AI%20Samples/POC%202%20--%20Health%20Content%20Recommender%20%28Agent%20Loop%29.md) | LangChain, LangGraph, and Agno orchestration with deterministic checks, bounded retries, and fallback. |
 | **POC 3 — MCP Samples** | [Project README](./MCP%20Samples/README.md) · [Use Case 1](./MCP%20Samples/Use%20Case%201%20-%20MCP.md) · [Run notes](./MCP%20Samples/NOTES.md) | Expose a domain capability through MCP; learn tools, resources, prompts, transports, state handles, and security boundaries. |
 | **POC 4 — Vector Search (Azure AI Search)** | [Project README](./VECTOR%20Samples/README.md) · [Use Case 1](./VECTOR%20Samples/UC%201%20--%20Health%20Content%20Search%20%28Azure%20AI%20Search%29.md) | A portal-driven managed vector search lab with integrated vectorization, safety filters, and knowledge-base evaluation. |
+| **POC 5 — Agent SDK loop** | [Project README](./CLAUDE%20Samples/01-agent-sdk-loop/README.md) | A Claude Agent SDK agent with two tools, a `PreToolUse` guard enforcing the R2 safety rules, and a turn limit. |
+| **POC 6 — Claude Code configuration** | [Project README](./CLAUDE%20Samples/02-claude-code-setup/README.md) | CLAUDE.md, path-scoped rules, a skill, a subagent and an MCP server configured for a small API codebase. |
+| **POC 7 — MCP structured errors** | [Project README](./CLAUDE%20Samples/03-mcp-structured-errors/README.md) | Tool errors with `isError`, a category and a retry hint, so an agent can tell bad input from an outage. |
+| **POC 8 — Extraction pipeline** | [Project README](./CLAUDE%20Samples/04-extraction-pipeline/README.md) | Strict schema, validation–retry loop and human review routing for vendor-article metadata. |
 
 ## What to learn across the examples
 

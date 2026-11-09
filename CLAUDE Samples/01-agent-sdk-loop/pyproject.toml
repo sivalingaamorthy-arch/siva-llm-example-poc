@@ -1,0 +1,28 @@
+[project]
+name = "health-agent"
+version = "0.1.0"
+description = "Claude Agent SDK practice: full agent loop, two tools, PreToolUse guard, turn limit"
+requires-python = ">=3.10"
+dependencies = [
+  "claude-agent-sdk>=0.2",
+  "anthropic>=0.40",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+health-agent = "health_agent.agent:main"
+health-agent-manual = "health_agent.manual_loop:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
