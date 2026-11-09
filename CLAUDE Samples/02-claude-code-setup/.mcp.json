@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "health-content": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--directory", "../03-mcp-structured-errors", "health-content-mcp"],
+      "env": {
+        "HEALTH_MCP_FLAKY_CALLS": "${HEALTH_MCP_FLAKY_CALLS:-0}"
+      }
+    }
+  }
+}

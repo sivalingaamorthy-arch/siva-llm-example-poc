@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(ruff check:*)",
+      "Bash(git diff:*)",
+      "Bash(git status)",
+      "mcp__health-content__search_articles",
+      "mcp__health-content__get_article"
+    ],
+    "ask": [
+      "mcp__health-content__flag_article"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
