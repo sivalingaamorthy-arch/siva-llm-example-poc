@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Desk Stretches for Neck and Shoulder Stiffness",
+    "summary": "Simple hourly shoulder rolls and neck tilts to ease stiffness from desk work.",
+    "category": "physical",
+    "condition_tags": [
+      "sedentary"
+    ],
+    "intensity": "medium",
+    "contraindications": [],
+    "evidence_quote": "Stop stretching if you feel any pain.",
+    "author": "Dr. Priya Raman",
+    "confidence": 0.9,
+    "uncertain_fields": []
+  },
+  {
+    "title": "Desk Stretches for Neck and Shoulder Stiffness",
+    "summary": "Simple hourly shoulder rolls and neck tilts to ease stiffness from desk work.",
+    "category": "physical",
+    "condition_tags": [
+      "sedentary"
+    ],
+    "intensity": "low",
+    "contraindications": [],
+    "evidence_quote": null,
+    "author": null,
+    "confidence": 0.9,
+    "uncertain_fields": []
+  }
+]
